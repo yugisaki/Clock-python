@@ -1,9 +1,9 @@
 """
 Init the display
 """
-import drivers
+import Drivers
 
-epd = drivers.EPD_2in9()
+epd = Drivers.EPD_2in9()
 epd.init()
 epd.fill(0xff)
 epd.display_Base(epd.buffer)
@@ -14,7 +14,7 @@ img_w = 120
 try:
     # Network
     import network, time, framebuf
-    
+
     ssid = "You wifi name"
     password = "your wifi password"
 
@@ -44,7 +44,7 @@ try:
     mode = 0
 
     while (True):
-        input = drivers.scan()
+        input = Drivers.scan()
 
         if (input == 3):
             mode = 2
@@ -69,5 +69,5 @@ try:
                 
 finally:
    epd.fill(0x00)
-   epd.blit(framebuf.FrameBuffer(bytearray(img),img_w,img_h,framebuf.MONO_HLSB),(drivers.EPD_WIDTH - img_w)//2,(drivers.EPD_HEIGHT - img_h)//2)
+   epd.blit(framebuf.FrameBuffer(bytearray(img),img_w,img_h,framebuf.MONO_HLSB),(Drivers.EPD_WIDTH - img_w)//2,(Drivers.EPD_HEIGHT - img_h)//2)
    epd.display_Base(epd.buffer)
