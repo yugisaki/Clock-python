@@ -407,3 +407,28 @@ class ICNT86():
                 print(ICNT_Dev.X[0], ICNT_Dev.Y[0], ICNT_Dev.P[0])
                 return
         return
+
+tp = ICNT86()
+icnt_dev = ICNT_Development()
+icnt_old = ICNT_Development()
+tp.ICNT_Init()
+
+def pthread_irq():
+    if(tp.config.digital_read(tp.config.int_pin) == 0):
+        icnt_dev.Touch = 1
+    else:
+        icnt_dev.Touch = 0
+
+def get_key():
+    if(tp.config.digital_read(tp.config.key0) == 0):
+        return 1
+    elif(tp.config.digital_read(tp.config.key1) == 0):
+        return 2
+    elif(tp.config.digital_read(tp.config.key2) == 0):
+        return 3
+    else:
+        return 0 # nothing pressed
+    
+def scan():
+    tp.ICNT_Scan(icnt_dev, icnt_old)
+    return get_key()
