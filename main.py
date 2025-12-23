@@ -119,7 +119,7 @@ try:
             minute = (sec - sec%60)//60
             sec = sec%60
             hour = (minute - minute%60)//60 - timezone_difrence
-            minute = minute&60
+            minute = minute%60
 
         # write buffer
         printf_str = ""
