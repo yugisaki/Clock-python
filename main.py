@@ -38,21 +38,32 @@ try:
         ntptime.settime()
     except:
         pass
+    timezone_difrence = 1 # spain
 
     # Screen config
     mode:int = 0
+    start_time = (0,0,0) # hour minutes seconds
     def key0_click(p):
         global mode
         mode = 0
         print(f"key0 clickd {p}")
+
+    def key1_click(p):
+        global mode
+        mode = 1
+
+        current_time = time.localtime()
+        global start_time
+        start_time = tuple([current_time[3],current_time[4],current_time[5]])
+        print(f"key1 clickd {p}")
 
     def key2_click(p):
         global mode
         mode = 2
         print(f"key2 clickd {p}")
 
-
     epd.config.key0.irq(trigger=Pin.IRQ_FALLING,handler=key0_click)
+    epd.config.key1.irq(trigger=Pin.IRQ_FALLING,handler=key1_click)
     epd.config.key2.irq(trigger=Pin.IRQ_FALLING,handler=key2_click)
     
     epd.text("clock-py",35,10,0x00)
@@ -60,26 +71,30 @@ try:
 
     while (True):
 
-        if (input == 3):
-            mode = 2
-
-        if (mode == 0):
-            current_time = time.localtime()
-            year, month, day, hour, minute, sec, milsec, nanosec = current_time 
-
-            # write buffer
-            epd.text(f"h: {hour + 1}",15,75,0x00)
-            epd.text(f"min: min:{minute}",15,75+12,0x00)
-            epd.text(f"sec: {sec}",15,75+12+12,0x00)
-            epd.display_Partial(epd.buffer)
-
-            # reset buffer
-            epd.text(f"h: {hour + 1}",15,75,0xff)
-            epd.text(f"min: min:{minute}",15,75+12,0xff)
-            epd.text(f"sec: {sec}",15,75+12+12,0xff)
-
         if (mode == 2):
             break
+        
+        current_time = time.localtime()
+        year, month, day, hour, minute, sec, milsec, nanosec = current_time 
+        if (mode == 1):
+            sec = (sec - start_time[2]) + (minute - start_time[1] + (hour - start_time[0])*60)*60
+            minute = (sec - sec%60)//60
+            sec = sec%60
+            hour = (minute - minute%60)//60 - timezone_difrence
+            minute = minute&60
+
+        # write buffer
+        epd.text(f"h: {hour + timezone_difrence}",15,75,0x00)
+        epd.text(f"min: min:{minute}",15,75+12,0x00)
+        epd.text(f"sec: {sec}",15,75+12+12,0x00)
+        epd.display_Partial(epd.buffer)
+
+        # reset buffer
+        epd.text(f"h: {hour + timezone_difrence}",15,75,0xff)
+        epd.text(f"min: min:{minute}",15,75+12,0xff)
+        epd.text(f"sec: {sec}",15,75+12+12,0xff)
+
+       
                 
 finally:
    epd.fill(0x00)
