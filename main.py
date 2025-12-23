@@ -18,7 +18,7 @@ try:
 
     ssid = "You wifi name"
     password = "your wifi password"
-
+    
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
     wlan.connect(ssid,password)
@@ -65,9 +65,47 @@ try:
     epd.config.key0.irq(trigger=Pin.IRQ_FALLING,handler=key0_click)
     epd.config.key1.irq(trigger=Pin.IRQ_FALLING,handler=key1_click)
     epd.config.key2.irq(trigger=Pin.IRQ_FALLING,handler=key2_click)
-    
-    epd.text("clock-py",35,10,0x00)
-    epd.display_Partial(epd.buffer)
+
+    # string s
+    import font
+    def printf(s,y,x): # print with font
+        epd.fill(0xff)
+        move = y
+        for chr in s:
+            if (chr == "0"):             
+                epd.blit(font.zero, move, move)
+                move += 38
+            elif (chr == "1"):
+                epd.blit(font.one, x, move)
+                move += 38
+            elif (chr == "2"):
+                epd.blit(font.two, x, move)
+                move += 38
+            elif (chr == "3"):
+                epd.blit(font.three, x, move)
+                move += 38
+            elif (chr == "4"):
+                epd.blit(font.four, x, move)
+                move += 38
+            elif (chr == "5"):
+                epd.blit(font.five, x, move)
+                move += 38
+            elif (chr == "6"):
+                epd.blit(font.six, x, move)
+                move += 38
+            elif (chr == "7"):
+                epd.blit(font.seven, x, move)
+                move += 38
+            elif (chr == "8"):
+                epd.blit(font.eight, x, move)
+                move += 38
+            elif (chr == "9"):
+                epd.blit(font.nine, x, move)
+                move += 38
+            else:
+                move += 28
+                
+        epd.display_Partial(epd.buffer)
 
     while (True):
 
@@ -84,19 +122,23 @@ try:
             minute = minute&60
 
         # write buffer
-        epd.text(f"h: {hour + timezone_difrence}",15,75,0x00)
-        epd.text(f"min: min:{minute}",15,75+12,0x00)
-        epd.text(f"sec: {sec}",15,75+12+12,0x00)
-        epd.display_Partial(epd.buffer)
+        printf_str = ""
+        if (hour + timezone_difrence < 10):
+            printf_str += f"0{hour + timezone_difrence}:"
+        else:
+            printf_str += f"{hour + timezone_difrence}:"
+        if (minute < 10):
+            printf_str += f"0{minute}:"
+        else:
+            printf_str += f"{minute}:"
+        if (sec < 10):
+            printf_str += f"0{sec}"
+        else:
+            printf_str += f"{sec}"
+        
+        printf(printf_str,0,37)
 
-        # reset buffer
-        epd.text(f"h: {hour + timezone_difrence}",15,75,0xff)
-        epd.text(f"min: min:{minute}",15,75+12,0xff)
-        epd.text(f"sec: {sec}",15,75+12+12,0xff)
-
-       
-                
 finally:
-   epd.fill(0x00)
-   epd.blit(framebuf.FrameBuffer(bytearray(img),img_w,img_h,framebuf.MONO_HLSB),(Drivers.EPD_WIDTH - img_w)//2,(Drivers.EPD_HEIGHT - img_h)//2)
-   epd.display_Base(epd.buffer)
+    epd.fill(0x00)
+    epd.blit(framebuf.FrameBuffer(bytearray(img),img_w,img_h,framebuf.MONO_HLSB),(Drivers.EPD_WIDTH - img_w)//2,(Drivers.EPD_HEIGHT - img_h)//2)
+    epd.display_Base(epd.buffer)
