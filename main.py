@@ -13,7 +13,8 @@ img_h = 180
 img_w = 120
 try:
     # Network
-    import network, time, framebuf
+    import network, time, framebuf, sys, ntptime
+    from machine import Pin
 
     ssid = "You wifi name"
     password = "your wifi password"
@@ -29,22 +30,35 @@ try:
         else:
             time.sleep(.2)
     else:
-        5 / 0 # couses program to cresh i dont know other ways xd
+       sys.exit()
 
-    import ntptime, time # set time server
+    # Configurate time
     try:
         ntptime.host = "pool.ntp.org"
         ntptime.settime()
     except:
         pass
 
+    # Screen config
+    mode:int = 0
+    def key0_click(p):
+        global mode
+        mode = 0
+        print(f"key0 clickd {p}")
+
+    def key2_click(p):
+        global mode
+        mode = 2
+        print(f"key2 clickd {p}")
+
+
+    epd.config.key0.irq(trigger=Pin.IRQ_FALLING,handler=key0_click)
+    epd.config.key2.irq(trigger=Pin.IRQ_FALLING,handler=key2_click)
+    
     epd.text("clock-py",35,10,0x00)
     epd.display_Partial(epd.buffer)
 
-    mode = 0
-
     while (True):
-        input = Drivers.scan()
 
         if (input == 3):
             mode = 2
