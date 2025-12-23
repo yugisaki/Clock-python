@@ -73,7 +73,7 @@ try:
         move = y
         for chr in s:
             if (chr == "0"):             
-                epd.blit(font.zero, move, move)
+                epd.blit(font.zero, x, move)
                 move += 38
             elif (chr == "1"):
                 epd.blit(font.one, x, move)
